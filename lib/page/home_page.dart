@@ -5,6 +5,7 @@ import 'package:speech_to_text_example/api/speech_api.dart';
 import 'package:speech_to_text_example/main.dart';
 import 'package:speech_to_text_example/widget/substring_highlighted.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import '../utils.dart';
 
@@ -14,19 +15,31 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+
+  final FlutterTts tts = FlutterTts();
+  final TextEditingController controller =
+      TextEditingController(text:"message");
+
   String text = '반가워요';
   String message = '안녕하세요?';
+
   bool isListening = false;
   bool isText = false;
 
+  _HomePageState() {
+    tts.setLanguage('ko-KR');
+    tts.setSpeechRate(0.4);
+  }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey,
+      // extendBodyBehindAppBar: true,
+      backgroundColor: Colors.grey[700],
       appBar: AppBar(
         title: Text(MyApp.title),
         centerTitle: true,
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.transparent,
         actions: [
           Builder(
             builder: (context) => IconButton(
@@ -40,52 +53,74 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ],
+        elevation: 0,
       ),
+
       body: SingleChildScrollView(
         reverse: true,
         padding: const EdgeInsets.all(10).copyWith(bottom: 150),
         child: Card(
+          color: Colors.white,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
           child: Column(
             children: <Widget>[
               const ListTile(
-                leading: Icon(Icons.album),
-                title: Text('BOT',
-                    style: TextStyle(fontSize: 20, color: Colors.black)),
-                subtitle: Text('챗봇메세지'),
+                leading: CircleAvatar(
+                radius: 30,
+                backgroundImage: AssetImage("assets/img/model.png"),
+              ),
+                title: Flexible(
+                  child: 
+                  Text(
+                    'BOT',
+                    maxLines: 2,
+                    softWrap: true,
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(fontSize: 20, color: Colors.black)
+                  ),
+                ),
+                subtitle: Text(
+                  '챗봇메세지',
+                  style: TextStyle(fontSize: 17, color: Colors.black54)),
               ),
               isListening
                   ? LinearProgressIndicator(
-                      backgroundColor: Colors.pink,
+                      backgroundColor: Colors.blue,
                     )
                   : LinearProgressIndicator(
                       value: 0,
                     ),
+                    
               Padding(
-                padding: const EdgeInsets.all(10),
+                padding: EdgeInsets.only(top: 10, bottom: 15, left: 10, right: 10),
                 child: Text(
                   message,
-                  style: TextStyle(fontSize: 28, color: Colors.black),
+                  style: TextStyle(fontSize: 24, color: Colors.black),
                 ),
               ),
-              SubstringHighlight(
-                text: text,
-                terms: Command.all,
-                textStyle: TextStyle(
-                  fontSize: 22.0,
-                  color: Colors.black54,
-                  fontWeight: FontWeight.w400,
-                ),
-                textStyleHighlight: TextStyle(
-                  fontSize: 22.0,
-                  color: Colors.red,
-                  fontWeight: FontWeight.w400,
+              Padding(
+                padding: const EdgeInsets.only(left: 14, right: 14),
+                child: Center(
+                  child: SubstringHighlight(
+                    text: text,
+                    terms: Command.all,
+                    textStyle: TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.black54,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    textStyleHighlight: TextStyle(
+                      fontSize: 22.0,
+                      color: Colors.red,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.volume_up),
+                icon: const Icon(Icons.keyboard),
                 tooltip: 'Increase volume by 10',
                 onPressed: () {},
               ),
@@ -107,9 +142,10 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  String _BDI_PREFIX = "http://192.168.35.22:5001/chatting/";
+  String _BDI_PREFIX = "http://192.168.35.179:5001/chatting/";
   Response response;
   Future toggleRecording() => SpeechApi.toggleRecording(
+        onSuccess: (message) => tts.speak(this.message),
         onResult: (text) => setState(() => this.text = text),
         onListening: (isListening) {
           setState(() => this.isListening = isListening);
