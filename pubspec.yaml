@@ -8,12 +8,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # package for icons
   cupertino_icons: ^1.0.0
 
-  # package for http request
-  dio: ^4.0.4
-  get: ^4.6.1
   # recording words
   speech_to_text: ^3.1.0
 
@@ -26,9 +22,18 @@ dependencies:
   # copy text to clipboard
   clipboard: ^0.1.2+8
 
+  # http package
+  dio: ^4.0.4
+
+  # package for speech synthesis
+  flutter_tts: ^3.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/img/model.png
