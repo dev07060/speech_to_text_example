@@ -13,7 +13,7 @@ Future main() async {
 }
 
 class MyApp extends StatelessWidget {
-  static final String title = 'Speech to Text';
+  static final String title = '챗봇과의 대화';
 
   @override
   Widget build(BuildContext context) => MaterialApp(

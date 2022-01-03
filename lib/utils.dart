@@ -4,9 +4,9 @@ import 'package:url_launcher/url_launcher.dart';
 class Command {
   static final all = [email, browser1, browser2];
 
-  static const email = 'write email';
-  static const browser1 = 'open';
-  static const browser2 = 'go to';
+  static const email = '이메일 써 줘';
+  static const browser1 = '열어 줘';
+  static const browser2 = '가자';
 }
 
 class Utils {
@@ -57,6 +57,7 @@ class Utils {
   }) async {
     final url = 'mailto: ?body=${Uri.encodeFull(body)}';
     await _launchUrl(url);
+    print("이메일");
   }
 
   static Future _launchUrl(String url) async {

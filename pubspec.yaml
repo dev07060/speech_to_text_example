@@ -8,8 +8,12 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # package for icons
   cupertino_icons: ^1.0.0
 
+  # package for http request
+  dio: ^4.0.4
+  get: ^4.6.1
   # recording words
   speech_to_text: ^3.1.0
 
