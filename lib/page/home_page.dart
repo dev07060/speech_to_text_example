@@ -5,7 +5,7 @@ import 'package:speech_to_text_example/api/speech_api.dart';
 import 'package:speech_to_text_example/main.dart';
 import 'package:speech_to_text_example/widget/substring_highlighted.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_tts/flutter_tts.dart';
+// import 'package:flutter_tts/flutter_tts.dart';
 
 import '../utils.dart';
 
@@ -15,22 +15,12 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
-  final FlutterTts tts = FlutterTts();
-  final TextEditingController controller =
-      TextEditingController(text:"message");
-
   String text = '반가워요';
   String message = '안녕하세요?';
 
   bool isListening = false;
   bool isText = false;
 
-  _HomePageState() {
-    tts.setLanguage('ko-KR');
-    tts.setSpeechRate(0.4);
-  }
-  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,36 +58,33 @@ class _HomePageState extends State<HomePage> {
             children: <Widget>[
               const ListTile(
                 leading: CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage("assets/img/model.png"),
-              ),
-                title: Flexible(
-                  child: 
-                  Text(
-                    'BOT',
-                    maxLines: 2,
-                    softWrap: true,
-                    overflow: TextOverflow.fade,
-                    style: TextStyle(fontSize: 20, color: Colors.black)
-                  ),
+                  radius: 33,
+                  backgroundImage: AssetImage("assets/img/model.png"),
                 ),
-                subtitle: Text(
-                  '챗봇메세지',
-                  style: TextStyle(fontSize: 17, color: Colors.black54)),
+                title: Flexible(
+                  child: Text('BOT',
+                      maxLines: 2,
+                      softWrap: true,
+                      overflow: TextOverflow.fade,
+                      style: TextStyle(fontSize: 20, color: Colors.black)),
+                ),
+                subtitle: Text('챗봇메세지',
+                    style: TextStyle(fontSize: 17, color: Colors.black54)),
               ),
               isListening
                   ? LinearProgressIndicator(
-                      backgroundColor: Colors.blue,
+                      backgroundColor: Colors.pink[100],
                     )
                   : LinearProgressIndicator(
                       value: 0,
                     ),
-                    
               Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 15, left: 10, right: 10),
-                child: Text(
-                  message,
-                  style: TextStyle(fontSize: 24, color: Colors.black),
+                padding:
+                    EdgeInsets.only(top: 10, bottom: 15, left: 10, right: 10),
+                child: Expanded(
+                  child: Text(message,
+                      style: TextStyle(fontSize: 24, color: Colors.black),
+                      maxLines: 2),
                 ),
               ),
               Padding(
@@ -119,11 +106,24 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.keyboard),
-                tooltip: 'Increase volume by 10',
-                onPressed: () {},
-              ),
+              isText
+                  ? IconButton(
+                      icon: const Icon(Icons.keyboard),
+                      tooltip: 'Increase volume by 10',
+                      onPressed: () {
+                        setState(() => this.isText = false);
+                        print(isText);
+                      },
+                    )
+                  : TextField(
+                      decoration: InputDecoration(),
+                      onSubmitted: (value) {
+                        setState(() => this.text = value);
+                        setState(() => this.isText = true);
+                        text = "";
+                        toggleKeyboard();
+                      },
+                    ),
             ],
           ),
         ),
@@ -142,26 +142,50 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  String _BDI_PREFIX = "http://192.168.35.179:5001/chatting/";
+  // ignore: non_constant_identifier_names
+  String email = "1111@test.com";
+  String bdi_call = "bdiscale?email=";
+  String _BDI_PREFIX = "http://192.168.0.37:5001/";
   Response response;
+
+  Future toggleKeyboard() async {
+    if (isText) {
+      Dio dio = Dio();
+      response = await dio.post("$_BDI_PREFIX$bdi_call$email");
+      Utils.scanText(text);
+      print(response.data["시스템 응답"]);
+      setState(() {
+        // setState() 추가.
+        message = response.data["시스템 응답"];
+      });
+    }
+  }
+
   Future toggleRecording() => SpeechApi.toggleRecording(
-        onSuccess: (message) => tts.speak(this.message),
+        // onSuccess: (message) => tts.speak(this.message),
         onResult: (text) => setState(() => this.text = text),
         onListening: (isListening) {
           setState(() => this.isListening = isListening);
-
+          var formData = FormData.fromMap({
+            'input_text': text,
+            'present_bdi': '',
+          });
           if (!isListening) {
             Future.delayed(Duration(seconds: 2), () async {
               Response response;
               Dio dio = Dio();
-              response = await dio.post("$_BDI_PREFIX$text");
+              response = await dio.post("$_BDI_PREFIX", data: formData);
               Utils.scanText(text);
-              print(response.data["시스템 응답"]);
+              String chat = await response.data["분석결과"]["시스템 응답"];
+              String bdi = await response.data["생성된 질문"]["질문"];
+              print(chat);
               setState(() {
                 // setState() 추가.
-                message = response.data["시스템 응답"];
+                message = bdi;
               });
             });
+          } else {
+            message = "";
           }
         },
       );
