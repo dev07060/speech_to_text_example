@@ -33,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isText = false;
   bool isCommand = false;
   bool isLoading = false;
-  List chatData = [];
+  int flow = 0;
   int yn = 0;
 
   @override
@@ -230,9 +230,9 @@ class _ChatScreenState extends State<ChatScreen> {
   // (includes : dio connection, create chat bubble)
   Future toggleKeyboard() async {
 
-    print("ddddddddddddd$distType");
+    print("ddddddddddddd$distType ___ $flow");
     additionalCommand(distType);
-    straightCommand(text).then((d) => setState(() => isCommand = d));
+    straightCommand(text);
     // additionalCommand(distType);
     print("isCommand : $isCommand / isText: $isText");
 
@@ -240,7 +240,7 @@ class _ChatScreenState extends State<ChatScreen> {
       print("straightCommand  $isText");
       if (text != ''.trim()) {
         await dioConnection(bdi_call, email, text)
-            .then((value) => setState(() => [message = value[0], distType = value[1]]));
+            .then((value) => setState(() => [message = value[0], distType = value[1], flow = value[2]]));
         maxScrolling();
       } else {
         setState(() => {
@@ -289,11 +289,11 @@ Future <List>dioConnection(String _end, String _email, String _userMsg) async {
   int yn = response.data["입력문장긍부정도"]["긍부정구분"]["분류 결과"];
   if (_userMsg != ''.trim()) {
     if(dist == "일반") {
-      bubbleGenerate(chat, 2, b_dist);
-      return [chat, b_dist];
+      bubbleGenerate(chat, 2, dist);
+      return [chat, dist, yn];
     } else {
-      bubbleGenerate(bdi, 2, b_dist);
-      return [bdi, b_dist];
+      bubbleGenerate(bdi, 2, dist);
+      return [bdi, dist, yn];
     }
   }
 }
