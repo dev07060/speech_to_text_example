@@ -12,10 +12,10 @@ Future straightCommand(String _userInput) async {
   return true;
 }
 
-Future additionalCommand(String _botOutput) async {
+Future additionalCommand(String _botOutput, int _flow) async {
   print("in func $_botOutput == ${bdiDist[16]},,,${_botOutput == bdiDist[16]}");
-    if (_botOutput == bdiDist[16]){
-      return bubbleGenerate((additionalMessage[16][0]..shuffle()).first, 2, 'additionalCommand');
+    if (_botOutput == bdiDist[16] && _flow == 2){
+      return bubbleGenerate((additionalMessage[16][11]..shuffle()).first, 2, 'additionalCommand');
     }
 }
 

@@ -231,7 +231,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Future toggleKeyboard() async {
 
     print("ddddddddddddd$distType ___ $flow");
-    additionalCommand(distType);
+    additionalCommand(distType, flow);
     straightCommand(text);
     // additionalCommand(distType);
     print("isCommand : $isCommand / isText: $isText");
