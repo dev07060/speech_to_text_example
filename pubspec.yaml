@@ -18,7 +18,9 @@ dependencies:
 
   # launch apps, browser & email
   url_launcher: ^5.7.10
-
+  animated_text_kit: ^4.2.1
+  # gauges chart package
+  gauges: ^1.0.0
   # copy text to clipboard
   clipboard: ^0.1.2+8
 
