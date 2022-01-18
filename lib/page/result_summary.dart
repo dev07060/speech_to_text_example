@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:gauges/gauges.dart';
+import 'package:speech_to_text_example/controllers/preference.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:charts_flutter/flutter.dart' as charts;
+
 
 class ResultSummary extends StatefulWidget {
   const ResultSummary({Key key}) : super(key: key);
@@ -13,9 +16,8 @@ class ResultSummary extends StatefulWidget {
 }
 
 class _SegmentsPageState extends State<ResultSummary> {
-  String email = "1111@test.net";
   // var url = "http://192.168.0.37:5001/api/result/";
-  var url = "http://192.168.0.37:5001/api/result/";
+  var request = "${url}api/result/";
 
   double _pointerValue = 0;
   double _aft = 0;
@@ -43,7 +45,7 @@ class _SegmentsPageState extends State<ResultSummary> {
       isLoading = true;
     });
 
-    response = await dio.get("$url$email");
+    response = await dio.get("$request$email");
     if(response.statusCode == 200){
       var items = response.data;
 
@@ -69,7 +71,9 @@ class _SegmentsPageState extends State<ResultSummary> {
             MediaQuery.of(context).size.height) - 50;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Segments'),
+        title: Text(''),
+        centerTitle: true,
+        backgroundColor: Colors.transparent,
         actions: [
           IconButton(icon: Icon(Icons.code_outlined), onPressed: () {}),
         ],
@@ -85,18 +89,26 @@ class _SegmentsPageState extends State<ResultSummary> {
               Container(
                 child: Card()
               ),
-              // SizedBox(height: 24),
-              // Slider(
-              //     value: _pointerValue,
-              //     min: 0,
-              //     max: 63,
-              //     onChanged: (value) {
-              //       setState(() {
-              //         _pointerValue = value;
-              //       });
-              //     }),
-              // SizedBox(height: 15),
-              // Text(_pointerValue.round().toString()),
+              SizedBox(height: 24),
+              SliderTheme(
+                data: SliderThemeData(
+                  thumbColor: Colors.white,
+                  activeTickMarkColor: Colors.white,
+                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
+                ),
+                child: Slider(
+                    divisions: 6,
+                    value: _pointerValue,
+                    min: 0,
+                    max: 63,
+                    onChanged: (value) {
+                      setState(() {
+                        _pointerValue = value;
+                      });
+                    }),
+              ),
+              SizedBox(height: 15),
+              Text(_pointerValue.round().toString()),
               Row(
                 children: [
                   Stack(

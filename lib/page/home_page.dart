@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-
 import 'package:avatar_glow/avatar_glow.dart';
-import 'package:clipboard/clipboard.dart';
 import 'package:speech_to_text_example/api/speech_api.dart';
 import 'package:speech_to_text_example/main.dart';
 import 'package:speech_to_text_example/widget/substring_highlighted.dart';
 import 'package:dio/dio.dart';
+import '../utils.dart';
+
+// import 'package:clipboard/clipboard.dart';
 // import 'package:flutter_tts/flutter_tts.dart';
 
-import '../utils.dart';
 
 class HomePage extends StatefulWidget {
   @override

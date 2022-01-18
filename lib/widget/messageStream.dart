@@ -45,6 +45,7 @@ class _MessagesStreamState extends State<MessagesStream> {
   void initState() {
     bool isCommand = false;
 
+
     _chatMessagesStream.listen((streamedMessages) {
       // _allMessagesContainedInTheStream.clear();
       debugPrint('Value from controller: $streamedMessages');

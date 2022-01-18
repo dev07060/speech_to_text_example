@@ -33,7 +33,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool isText = false;
   bool isCommand = false;
   bool isLoading = false;
-  List chatData = [];
+  int flow = 0;
   int yn = 0;
 
   @override
@@ -134,7 +134,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             leading: CircleAvatar(
                               radius: 33,
                               backgroundImage:
-                                  AssetImage("assets/img/model.png"),
+                              AssetImage("assets/img/model.png"),
                             ),
                             title: Text('MetaDoc',
                                 softWrap: true,
@@ -146,12 +146,12 @@ class _ChatScreenState extends State<ChatScreen> {
                                     fontSize: 17, color: Colors.black54)),
                           ),
                           isListening
-                          ? LinearProgressIndicator(
-                              backgroundColor: Colors.pink[100],
-                            )
-                          : LinearProgressIndicator(
-                              value: 0,
-                            ),
+                              ? LinearProgressIndicator(
+                            backgroundColor: Colors.pink[100],
+                          )
+                              : LinearProgressIndicator(
+                            value: 0,
+                          ),
                           Padding(
                             padding: EdgeInsets.only(
                                 top: 10, bottom: 15, left: 10, right: 10),
@@ -180,35 +180,35 @@ class _ChatScreenState extends State<ChatScreen> {
                             ),
                           ),
                           isText
-                          ? Container(
-                              width: 330,
-                              height: 50,
-                              decoration: BoxDecoration(
-                                  color: Colors.black26,
-                                  borderRadius: BorderRadius.circular(20)),
-                              child: TextField(
-                                autofocus: true,
-                                decoration: InputDecoration(
-                                    fillColor: Colors.white30,
-                                    filled: true,
-                                    border: InputBorder.none),
-                                onSubmitted: (value) {
-                                  setState(() => this.text = value.trim());
-                                  setState(() => this.isText = false);
-                                  // text = "";
-                                  _messageTextController.clear();
-                                  bubbleGenerate(value.trim(), 1,  '-');
-                                  maxScrolling();
-                                  // straightCommand(value, isText);
-                                  toggleKeyboard();
-                                },
-                              ),
-                            )
-                          : IconButton(
-                              icon: const Icon(Icons.keyboard),
-                              tooltip: '키보드 입력 버튼',
-                              onPressed: () {
-                                setState(() => this.isText = true);
+                              ? Container(
+                            width: 330,
+                            height: 50,
+                            decoration: BoxDecoration(
+                                color: Colors.black26,
+                                borderRadius: BorderRadius.circular(20)),
+                            child: TextField(
+                              autofocus: true,
+                              decoration: InputDecoration(
+                                  fillColor: Colors.white30,
+                                  filled: true,
+                                  border: InputBorder.none),
+                              onSubmitted: (value) {
+                                setState(() => this.text = value.trim());
+                                setState(() => this.isText = false);
+                                // text = "";
+                                _messageTextController.clear();
+                                bubbleGenerate(value.trim(), 1,  '-');
+                                maxScrolling();
+                                // straightCommand(value, isText);
+                                toggleKeyboard();
+                              },
+                            ),
+                          )
+                              : IconButton(
+                            icon: const Icon(Icons.keyboard),
+                            tooltip: '키보드 입력 버튼',
+                            onPressed: () {
+                              setState(() => this.isText = true);
                             },
                           ),
                         ],
@@ -229,25 +229,23 @@ class _ChatScreenState extends State<ChatScreen> {
   // function for user typing keyboard to send message
   // (includes : dio connection, create chat bubble)
   Future toggleKeyboard() async {
-
-    print("ddddddddddddd$distType");
-    additionalCommand(distType);
-    straightCommand(text).then((d) => setState(() => isCommand = d));
+    print("ddddddddddddd$distType ___ $flow");
+    additionalCommand(distType, flow);
+    straightCommand(text);
     // additionalCommand(distType);
+    print(flow);
     print("isCommand : $isCommand / isText: $isText");
 
-    if(!isCommand) {
       print("straightCommand  $isText");
       if (text != ''.trim()) {
         await dioConnection(bdi_call, email, text)
-            .then((value) => setState(() => [message = value[0], distType = value[1]]));
+            .then((value) => setState(() => [message = value[0], distType = value[1], flow = value[2]]));
         maxScrolling();
       } else {
         setState(() => {
           isText = false
         });
       }
-    }
   }
 
   // voice recognition function (includes : dio connection, create chat bubble)
@@ -284,18 +282,16 @@ Future <List>dioConnection(String _end, String _email, String _userMsg) async {
   Utils.scanText(_userMsg);
   String chat = response.data["분석결과"]["시스템응답"];
   String bdi = response.data["생성된 질문"]["질문"];
-  String dist = response.data["사용자 입력 BDI 분류"]["분류 결과"];
-  String b_dist = response.data["입출력데이터"]["BDI분류"];
+  String dist = response.data["생성된 질문"]["BDI"];
+  String q_dist = response.data["사용자 입력 BDI 분류"]["분류 결과"];
   int yn = response.data["입력문장긍부정도"]["긍부정구분"]["분류 결과"];
   if (_userMsg != ''.trim()) {
-    if(dist == "일반") {
-      bubbleGenerate(chat, 2, b_dist);
-      return [chat, b_dist];
+    if(q_dist == "일반") {
+      bubbleGenerate(chat, 2, dist);
+      return [chat, dist, yn];
     } else {
-      bubbleGenerate(bdi, 2, b_dist);
-      return [bdi, b_dist];
+      bubbleGenerate(bdi, 2, dist);
+      return [bdi, dist, yn];
     }
   }
 }
-// Dio http function end
-
