@@ -82,9 +82,13 @@ class _SegmentsPageState extends State<ResultSummary> {
       appBar: AppBar(
         title: Text(''),
         centerTitle: true,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
+        iconTheme: IconThemeData(color: Colors.black),
         actions: [
-          IconButton(icon: Icon(Icons.code_outlined), onPressed: () {}),
+          IconButton(
+              color: Colors.black,
+              icon: Icon(Icons.code_outlined),
+              onPressed: () {}),
         ],
       ),
       body: SingleChildScrollView(
@@ -96,9 +100,13 @@ class _SegmentsPageState extends State<ResultSummary> {
                 ? Padding(
                     padding: EdgeInsets.only(left: size / 18, right: size / 18),
                     child: Card(
+                      elevation: 4,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15.0),
-                      ),
+                          borderRadius: BorderRadius.circular(15.0),
+                          side: BorderSide(
+                            color: Colors.grey.withOpacity(0.2),
+                            width: 1,
+                          )),
                       child: Column(children: [
                         SizedBox(height: 24),
                         Padding(
@@ -121,17 +129,19 @@ class _SegmentsPageState extends State<ResultSummary> {
                             thumbShape:
                                 RoundSliderThumbShape(enabledThumbRadius: 10),
                           ),
-                          child: Slider(
-                              label: _pointerValue.toString(),
-                              divisions: 6,
-                              value: 63 - _pointerValue,
-                              min: 0,
-                              max: 63,
-                              onChanged: (value) {
-                                setState(() {
-                                  _pointerValue = value;
-                                });
-                              }),
+                          child: AbsorbPointer(
+                            child: Slider(
+                                label: _pointerValue.toString(),
+                                divisions: 6,
+                                value: 63 - _pointerValue,
+                                min: 0,
+                                max: 63,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _pointerValue = value;
+                                  });
+                                }),
+                          ),
                         ),
                         Text(resultList["solution"],
                             style: TextStyle(
