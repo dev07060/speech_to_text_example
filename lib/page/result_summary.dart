@@ -175,7 +175,7 @@ class _SegmentsPageState extends State<ResultSummary> {
                     SizedBox(height: 10),
                     Align(
                       alignment: Alignment.centerLeft,
-                      child: Text("우울증을 느낄원인 요소가 많아요",
+                      child: Text("우울증을 느낄 요소가 많았어요",
                           style: TextStyle(
                               fontSize: 17, fontWeight: FontWeight.w600)),
                     ),
@@ -215,6 +215,37 @@ class _SegmentsPageState extends State<ResultSummary> {
                       alignment: Alignment.centerLeft,
                       child: Text(
                         "Brian님과 대화 중에 수집한 정보에 의하면 \n자기비판, 죄책감과 같은 우울증의 원인 요소들을 \n많이 느끼고 계신거 같아요",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        softWrap: true,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Divider(),
+                    SizedBox(height: 24),
+                    // 감정영역 요소
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("자주 깜빡깜빡 하신다면🤦🏻",
+                          style: TextStyle(
+                            fontSize: 23,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("내 기억력 누가 훔쳐갔지?",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "집중력과 기억력에 문제가 생기신거 같네요\n심한 스트레스나 우울증에도 이런 증상이 나타나요\n몇가지 방법으로 다시 되찾을 수 있어요",
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
