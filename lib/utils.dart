@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class Command {
+// TODO: create 'how to use' command
   static final all = [email, browser1, browser2];
-
   static const email = '이메일 써 줘';
   static const browser1 = '열어 줘';
   static const browser2 = '가자';

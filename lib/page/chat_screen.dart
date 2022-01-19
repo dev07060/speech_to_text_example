@@ -16,7 +16,6 @@ import '../utils.dart';
 ChatMessageModel _chatMessagesModel = ChatMessageModel();
 
 class ChatScreen extends StatefulWidget {
-
   static const String id = 'chat_screen9';
 
   @override
@@ -50,9 +49,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Do some action when screen is closed
   }
 
-
   final _messageTextController = TextEditingController();
-
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +90,7 @@ class _ChatScreenState extends State<ChatScreen> {
           Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.analytics),
-              onPressed: ()  {
+              onPressed: () {
                 Navigator.pushNamed(context, '/second');
                 // await FlutterClipboard.copy(text);
                 // Scaffold.of(context).showSnackBar(
@@ -134,7 +131,7 @@ class _ChatScreenState extends State<ChatScreen> {
                             leading: CircleAvatar(
                               radius: 33,
                               backgroundImage:
-                              AssetImage("assets/img/model.png"),
+                                  AssetImage("assets/img/model.png"),
                             ),
                             title: Text('MetaDoc',
                                 softWrap: true,
@@ -147,11 +144,11 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           isListening
                               ? LinearProgressIndicator(
-                            backgroundColor: Colors.pink[100],
-                          )
+                                  backgroundColor: Colors.pink[100],
+                                )
                               : LinearProgressIndicator(
-                            value: 0,
-                          ),
+                                  value: 0,
+                                ),
                           Padding(
                             padding: EdgeInsets.only(
                                 top: 10, bottom: 15, left: 10, right: 10),
@@ -181,36 +178,36 @@ class _ChatScreenState extends State<ChatScreen> {
                           ),
                           isText
                               ? Container(
-                            width: 330,
-                            height: 50,
-                            decoration: BoxDecoration(
-                                color: Colors.black26,
-                                borderRadius: BorderRadius.circular(20)),
-                            child: TextField(
-                              autofocus: true,
-                              decoration: InputDecoration(
-                                  fillColor: Colors.white30,
-                                  filled: true,
-                                  border: InputBorder.none),
-                              onSubmitted: (value) {
-                                setState(() => this.text = value.trim());
-                                setState(() => this.isText = false);
-                                // text = "";
-                                _messageTextController.clear();
-                                bubbleGenerate(value.trim(), 1,  '-');
-                                maxScrolling();
-                                // straightCommand(value, isText);
-                                toggleKeyboard();
-                              },
-                            ),
-                          )
+                                  width: 330,
+                                  height: 50,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black26,
+                                      borderRadius: BorderRadius.circular(20)),
+                                  child: TextField(
+                                    autofocus: true,
+                                    decoration: InputDecoration(
+                                        fillColor: Colors.white30,
+                                        filled: true,
+                                        border: InputBorder.none),
+                                    onSubmitted: (value) {
+                                      setState(() => this.text = value.trim());
+                                      setState(() => this.isText = false);
+                                      // text = "";
+                                      _messageTextController.clear();
+                                      bubbleGenerate(value.trim(), 1, '-');
+                                      maxScrolling();
+                                      // straightCommand(value, isText);
+                                      toggleKeyboard();
+                                    },
+                                  ),
+                                )
                               : IconButton(
-                            icon: const Icon(Icons.keyboard),
-                            tooltip: '키보드 입력 버튼',
-                            onPressed: () {
-                              setState(() => this.isText = true);
-                            },
-                          ),
+                                  icon: const Icon(Icons.keyboard),
+                                  tooltip: '키보드 입력 버튼',
+                                  onPressed: () {
+                                    setState(() => this.isText = true);
+                                  },
+                                ),
                         ],
                       ),
                     ),
@@ -231,54 +228,50 @@ class _ChatScreenState extends State<ChatScreen> {
   Future toggleKeyboard() async {
     print("ddddddddddddd$distType ___ $flow");
     additionalCommand(distType, flow);
-    straightCommand(text);
+    straightCommand(text, isCommand);
     // additionalCommand(distType);
     print(flow);
     print("isCommand : $isCommand / isText: $isText");
 
-      print("straightCommand  $isText");
-      if (text != ''.trim()) {
-        await dioConnection(bdi_call, email, text)
-            .then((value) => setState(() => [message = value[0], distType = value[1], flow = value[2]]));
-        maxScrolling();
-      } else {
-        setState(() => {
-          isText = false
-        });
-      }
+    print("straightCommand  $isText");
+    if (text != ''.trim()) {
+      await dioConnection(bdi_call, email, text).then((value) => setState(
+          () => [message = value[0], distType = value[1], flow = value[2]]));
+      maxScrolling();
+    } else {
+      setState(() => {isText = false});
+    }
   }
 
   // voice recognition function (includes : dio connection, create chat bubble)
   Future toggleRecording() => SpeechApi.toggleRecording(
-    onResult: (text) => setState(() => this.text = text),
-    onListening: (isListening) {
-      setState(() => this.isListening = isListening);
-      if (!isListening) {
-        Future.delayed(Duration(seconds: 2), () async {
-          bubbleGenerate(text, 1, '');
-          maxScrolling();
+        onResult: (text) => setState(() => this.text = text),
+        onListening: (isListening) {
+          setState(() => this.isListening = isListening);
+          if (!isListening) {
+            Future.delayed(Duration(seconds: 2), () async {
+              bubbleGenerate(text, 1, '');
+              maxScrolling();
 
-          await dioConnection(bdi_call, email, text)
-              .then((value) => setState(() => message = value[0]));
-          maxScrolling();
-        });
-      } else {
-        message = "";
-      }
-    },
-  );
+              await dioConnection(bdi_call, email, text)
+                  .then((value) => setState(() => message = value[0]));
+              maxScrolling();
+            });
+          } else {
+            message = "";
+          }
+        },
+      );
 }
 
-
-Future <List>dioConnection(String _end, String _email, String _userMsg) async {
-
+Future<List> dioConnection(String _end, String _email, String _userMsg) async {
   var formData = FormData.fromMap({
     'input_text': _userMsg,
     'present_bdi': '',
   });
 
   Dio dio = new Dio();
-  Response response = await dio.post("$url$_end$_email", data:formData);
+  Response response = await dio.post("$url$_end$_email", data: formData);
   Utils.scanText(_userMsg);
   String chat = response.data["분석결과"]["시스템응답"];
   String bdi = response.data["생성된 질문"]["질문"];
@@ -286,7 +279,7 @@ Future <List>dioConnection(String _end, String _email, String _userMsg) async {
   String q_dist = response.data["사용자 입력 BDI 분류"]["분류 결과"];
   int yn = response.data["입력문장긍부정도"]["긍부정구분"]["분류 결과"];
   if (_userMsg != ''.trim()) {
-    if(q_dist == "일반") {
+    if (q_dist == "일반") {
       bubbleGenerate(chat, 2, dist);
       return [chat, dist, yn];
     } else {

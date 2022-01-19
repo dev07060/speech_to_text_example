@@ -7,7 +7,6 @@ import 'package:speech_to_text_example/controllers/preference.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
 
-
 class ResultSummary extends StatefulWidget {
   const ResultSummary({Key key}) : super(key: key);
 
@@ -18,7 +17,15 @@ class ResultSummary extends StatefulWidget {
 class _SegmentsPageState extends State<ResultSummary> {
   // var url = "http://192.168.0.37:5001/api/result/";
   var request = "${url}api/result/";
-
+  final sliderLabels = [
+    "위험해요",
+    "위험해요",
+    "너무 아파요",
+    "아파요",
+    "치료가 필요해요",
+    "건강한 편이예요",
+    "너무 건강해요"
+  ];
   double _pointerValue = 0;
   double _aft = 0;
   double _cgt = 0;
@@ -27,7 +34,7 @@ class _SegmentsPageState extends State<ResultSummary> {
   Map<String, dynamic> resultList;
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     this.fetchResult();
   }
@@ -46,7 +53,7 @@ class _SegmentsPageState extends State<ResultSummary> {
     });
 
     response = await dio.get("$request$email");
-    if(response.statusCode == 200){
+    if (response.statusCode == 200) {
       var items = response.data;
 
       setState(() {
@@ -68,8 +75,10 @@ class _SegmentsPageState extends State<ResultSummary> {
   @override
   Widget build(BuildContext context) {
     final size = min(MediaQuery.of(context).size.width,
-            MediaQuery.of(context).size.height) - 50;
+            MediaQuery.of(context).size.height) -
+        50;
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: Text(''),
         centerTitle: true,
@@ -78,150 +87,138 @@ class _SegmentsPageState extends State<ResultSummary> {
           IconButton(icon: Icon(Icons.code_outlined), onPressed: () {}),
         ],
       ),
-      body: Padding(
-        padding: EdgeInsets.only(
-            left: size/18, right: size/18),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              !isLoading?
-              SpeedoMeter(size: size, pointerValue: _pointerValue, resultList: resultList):
-              Container(
-                child: Card()
-              ),
-              SizedBox(height: 24),
-              SliderTheme(
-                data: SliderThemeData(
-                  thumbColor: Colors.white,
-                  activeTickMarkColor: Colors.white,
-                  thumbShape: RoundSliderThumbShape(enabledThumbRadius: 10),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            !isLoading
+                // Healthy mind meter
+                ? Padding(
+                    padding: EdgeInsets.only(left: size / 18, right: size / 18),
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15.0),
+                      ),
+                      child: Column(children: [
+                        SizedBox(height: 24),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 60.0),
+                          child: Text(resultList["description"],
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
+                              )),
+                        ),
+                        SizedBox(height: 15),
+                        SliderTheme(
+                          data: SliderThemeData(
+                            trackHeight: 10,
+                            thumbColor: Colors.white,
+                            activeTickMarkColor: Colors.white,
+                            activeTrackColor: Color(0xFFE88C4F),
+                            inactiveTrackColor: Colors.grey,
+                            inactiveTickMarkColor: Colors.white,
+                            thumbShape:
+                                RoundSliderThumbShape(enabledThumbRadius: 10),
+                          ),
+                          child: Slider(
+                              label: _pointerValue.toString(),
+                              divisions: 6,
+                              value: 63 - _pointerValue,
+                              min: 0,
+                              max: 63,
+                              onChanged: (value) {
+                                setState(() {
+                                  _pointerValue = value;
+                                });
+                              }),
+                        ),
+                        Text(resultList["solution"],
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.w500)),
+                        SizedBox(height: 24)
+                      ]),
+                    ),
+                  )
+                // SpeedoMeter(
+                //     size: size,
+                //     pointerValue: _pointerValue,
+                //     resultList: resultList)
+                : Container(child: Card()),
+            SizedBox(height: 24),
+            Container(
+              width: 700,
+              color: Colors.white,
+              child: Padding(
+                padding: const EdgeInsets.all(25),
+                child: Column(
+                  children: [
+                    // 인지영역 요소
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("원인을 파악했어요 🕵🏻‍♂️",
+                          style: TextStyle(
+                            fontSize: 23,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("우울증을 느낄원인 요소가 많아요",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Brian님과 대화 중에 수집한 정보에 의하면 \n자기비판, 죄책감과 같은 우울증의 원인 요소들을 \n많이 느끼고 계신거 같아 보여요.\n주변 환경, 과거의 일이 관련이 있는 경우가 많아요",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        softWrap: true,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Divider(),
+                    SizedBox(height: 24),
+                    // 감정영역 요소
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("혹시 요즘..",
+                          style: TextStyle(
+                            fontSize: 23,
+                            fontWeight: FontWeight.w600,
+                          )),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("슬픈 감정을 자주 느끼시나요?",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.w600)),
+                    ),
+                    SizedBox(height: 10),
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        "Brian님과 대화 중에 수집한 정보에 의하면 \n자기비판, 죄책감과 같은 우울증의 원인 요소들을 \n많이 느끼고 계신거 같아요",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        softWrap: true,
+                      ),
+                    ),
+                    SizedBox(height: 24),
+                    Divider(),
+                  ],
                 ),
-                child: Slider(
-                    divisions: 6,
-                    value: _pointerValue,
-                    min: 0,
-                    max: 63,
-                    onChanged: (value) {
-                      setState(() {
-                        _pointerValue = value;
-                      });
-                    }),
               ),
-              SizedBox(height: 15),
-              Text(_pointerValue.round().toString()),
-              Row(
-                children: [
-                  Stack(
-                    children:[
-                      Card(
-                            child: SizedBox(
-                              height:size/3.2,
-                              width: size/3.2,
-                                child: RadialGauge(
-                                  axes: [
-                                    RadialGaugeAxis(
-                                      minValue: 0,
-                                      maxValue: 130,
-                                      minAngle: -130,
-                                      maxAngle: 100,
-                                      radius: 0.7,
-                                      width: 0.1,
-                                      segments: [
-                                        RadialGaugeSegment(
-                                          minValue: 0,
-                                          maxValue: 80,
-                                          minAngle: -130,
-                                          maxAngle: 40 + 60.0 - _aft,
-                                          color: Colors.green,
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                            )
-                          ),
-                      Positioned(
-                        top: size/8,
-                          left: size/10,
-                          child: Text("$_aft%", style:TextStyle(fontSize:20))
-                      )
-                    ]
-                  ),Stack(
-                    children:[
-                      Card(
-                            child: SizedBox(
-                              height:size/3.2,
-                              width: size/3.2,
-                                child: RadialGauge(
-                                  axes: [
-                                    RadialGaugeAxis(
-                                      minValue: 0,
-                                      maxValue: 130,
-                                      minAngle: -130,
-                                      maxAngle: 100,
-                                      radius: 0.7,
-                                      width: 0.1,
-                                      segments: [
-                                        RadialGaugeSegment(
-                                          minValue: 0,
-                                          maxValue: 80,
-                                          minAngle: -130,
-                                          maxAngle: 40 + 60.0 - _smt,
-                                          color: Colors.green,
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                            )
-                          ),
-                      Positioned(
-                        top: size/8,
-                        left: size/10,
-                          child: Text("$_smt%", style:(TextStyle(fontSize:20)))
-                      )
-                    ]
-                  ),
-                  Stack(
-                    children:[
-                      Card(
-                            child: SizedBox(
-                              height:size/3.2,
-                              width: size/3.2,
-                                child: RadialGauge(
-                                  axes: [
-                                    RadialGaugeAxis(
-                                      minValue: 0,
-                                      maxValue: 130,
-                                      minAngle: -130,
-                                      maxAngle: 100,
-                                      radius: 0.7,
-                                      width: 0.1,
-                                      segments: [
-                                        RadialGaugeSegment(
-                                          minValue: 0,
-                                          maxValue: 80,
-                                          minAngle: -130,
-                                          maxAngle: 40 + 60.0 - _cgt,
-                                          color: Colors.green,
-                                        )
-                                      ]
-                                    )
-                                  ]
-                                )
-                            )
-                          ),
-                      Positioned(
-                        top: size/8,
-                        left: size/10,
-                          child: Text("$_cgt%", style:(TextStyle(fontSize:20)))
-                      )
-                    ]
-                  ),
-                ]
-              )
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -234,7 +231,8 @@ class SpeedoMeter extends StatelessWidget {
     @required this.size,
     @required double pointerValue,
     @required this.resultList,
-  }) : _pointerValue = pointerValue, super(key: key);
+  })  : _pointerValue = pointerValue,
+        super(key: key);
 
   final double size;
   final double _pointerValue;
@@ -243,32 +241,34 @@ class SpeedoMeter extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Stack(
-          children: [
-        Positioned(top: size-150, left: size-200,
-            child:Container(
-              color:Colors.yellow,
-              child: Text(
-                  _pointerValue == "undefined"
-              ? "데이터 없음"
-                  : _pointerValue < 10
-              ? "정상"
-                  : _pointerValue >= 10 && _pointerValue < 19
-              ? "경증"
-                  : _pointerValue >= 19 && _pointerValue < 30
-              ? "중증"
-                  : _pointerValue >= 30 && _pointerValue <= 63
-              ? "심각"
-                  : "없음"
-              , style: TextStyle(fontSize: 30)),
-            ),
-        ),
-        Positioned(top: size-100, left: size-320,
-          child:Container(
-            color:Colors.yellow,
+      child: Stack(children: [
+        Positioned(
+          top: size - 150,
+          left: size - 200,
+          child: Container(
+            color: Colors.yellow,
             child: Text(
-                resultList["description"]
-                , style: TextStyle(fontSize: 17)),
+                _pointerValue == null
+                    ? "데이터 없음"
+                    : _pointerValue < 10
+                        ? "정상"
+                        : _pointerValue >= 10 && _pointerValue < 19
+                            ? "경증"
+                            : _pointerValue >= 19 && _pointerValue < 30
+                                ? "중증"
+                                : _pointerValue >= 30 && _pointerValue <= 63
+                                    ? "심각"
+                                    : "없음",
+                style: TextStyle(fontSize: 30)),
+          ),
+        ),
+        Positioned(
+          top: size - 100,
+          left: size - 320,
+          child: Container(
+            color: Colors.yellow,
+            child:
+                Text(resultList["description"], style: TextStyle(fontSize: 17)),
           ),
         ),
         SizedBox(
@@ -340,8 +340,7 @@ class SpeedoMeter extends StatelessWidget {
             ),
           ),
         ),
-      ]
-      ),
+      ]),
     );
   }
 }
