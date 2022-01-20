@@ -24,15 +24,11 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: title,
         theme: ThemeData(primarySwatch: Colors.green),
-        // home: HomePage(),
-    initialRoute: '/',
-    routes: {
-      // When we navigate to the "/" route, build the FirstScreen Widget
-      // "/" Route로 이동하면, FirstScreen 위젯을 생성합니다.
-      '/': (context) => HomePage(),
-      '/chat': (context) => ChatScreen(),
-      // "/second" route로 이동하면, SecondScreen 위젯을 생성합니다.
-      '/second': (context) => ResultSummary(),
-    },
+        initialRoute: '/',
+        routes: {
+          '/': (context) => HomePage(),
+          '/chat': (context) => ChatScreen(),
+          '/second': (context) => ResultSummary(),
+        },
       );
 }
