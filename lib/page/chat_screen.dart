@@ -225,15 +225,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // function for user typing keyboard to send message
   // (includes : dio connection, create chat bubble)
+
   Future toggleKeyboard() async {
-    print("ddddddddddddd$distType ___ $flow");
     additionalCommand(distType, flow);
     straightCommand(text, isCommand);
-    // additionalCommand(distType);
-    print(flow);
-    print("isCommand : $isCommand / isText: $isText");
-
-    print("straightCommand  $isText");
     if (text != ''.trim()) {
       await dioConnection(bdi_call, email, text).then((value) => setState(
           () => [message = value[0], distType = value[1], flow = value[2]]));
