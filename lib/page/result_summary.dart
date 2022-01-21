@@ -4,8 +4,23 @@ import 'dart:math';
 import 'package:dio/dio.dart';
 import 'package:gauges/gauges.dart';
 import 'package:speech_to_text_example/controllers/preference.dart';
+import 'package:carousel_slider/carousel_slider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:charts_flutter/flutter.dart' as charts;
+
+final List<String> imagesList = [
+  'https://cdn.pixabay.com/photo/2020/11/01/23/22/breakfast-5705180_1280.jpg',
+  'https://cdn.pixabay.com/photo/2016/11/18/19/00/breads-1836411_1280.jpg',
+  'https://cdn.pixabay.com/photo/2019/01/14/17/25/gelato-3932596_1280.jpg',
+  'https://cdn.pixabay.com/photo/2017/04/04/18/07/ice-cream-2202561_1280.jpg',
+];
+final List<String> titles = [
+  ' Coffee ',
+  ' Bread ',
+  ' Gelato ',
+  ' Ice Cream ',
+];
 
 class ResultSummary extends StatefulWidget {
   const ResultSummary({Key key}) : super(key: key);
@@ -15,8 +30,9 @@ class ResultSummary extends StatefulWidget {
 }
 
 class _SegmentsPageState extends State<ResultSummary> {
-  // var url = "http://192.168.0.37:5001/api/result/";
+  int _currentIndex = 0;
   var request = "${url}api/result/";
+
   final sliderLabels = [
     "위험해요",
     "위험해요",
@@ -26,6 +42,7 @@ class _SegmentsPageState extends State<ResultSummary> {
     "건강한 편이예요",
     "너무 건강해요"
   ];
+  bool _showCharts = false;
   double _pointerValue = 0;
   double _aft = 0;
   double _cgt = 0;
@@ -37,6 +54,7 @@ class _SegmentsPageState extends State<ResultSummary> {
   void initState() {
     super.initState();
     this.fetchResult();
+    this._showCharts = false;
   }
 
   void dispose() {
@@ -88,7 +106,9 @@ class _SegmentsPageState extends State<ResultSummary> {
           IconButton(
               color: Colors.black,
               icon: Icon(Icons.code_outlined),
-              onPressed: () {}),
+              onPressed: () {
+                Navigator.pushNamed(context, '/test');
+              }),
         ],
       ),
       body: SingleChildScrollView(
@@ -100,7 +120,8 @@ class _SegmentsPageState extends State<ResultSummary> {
                 ? Padding(
                     padding: EdgeInsets.only(left: size / 18, right: size / 18),
                     child: Card(
-                      elevation: 4,
+                      elevation: 6,
+                      shadowColor: Colors.blueAccent,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15.0),
                           side: BorderSide(
@@ -255,145 +276,138 @@ class _SegmentsPageState extends State<ResultSummary> {
                     ),
                     SizedBox(height: 24),
                     Divider(),
+                    SizedBox(height: 24),
+                    !_showCharts
+                        ? TextButton(
+                            style: TextButton.styleFrom(
+                                splashFactory: NoSplash.splashFactory,
+                                alignment: Alignment.center),
+                            onPressed: () {
+                              setState(() => {_showCharts = true});
+                            },
+                            child: Column(children: [
+                              Text("내 통계 보기",
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w500)),
+                              Icon(Icons.bar_chart, size: 25),
+                            ]),
+                          )
+                        : Column(
+                            children: [
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text("내 통계",
+                                    style: TextStyle(
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.w600,
+                                    )),
+                              ),
+                              SizedBox(height: 10),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text("지금까지 수집된 통계",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600)),
+                              ),
 
-                    TextButton(
-                      style: TextButton.styleFrom(
-                          splashFactory: NoSplash.splashFactory),
-                      onPressed: () {},
-                      child: Column(children: [
-                        Text("내 통계 보기\n",
-                            style: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w500)),
-                        Icon(Icons.bar_chart, size: 25)
-                      ]),
-                    )
+                              // place for chart1
+                              SizedBox(height: 100),
+                              Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text("일주일 간 사용 통계",
+                                    style: TextStyle(
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.w600)),
+                              ),
+
+                              // place for chart2
+                              SizedBox(height: 100),
+                              TextButton(
+                                style: TextButton.styleFrom(
+                                    splashFactory: NoSplash.splashFactory,
+                                    alignment: Alignment.center),
+                                onPressed: () {
+                                  setState(() => {_showCharts = false});
+                                },
+                                child: Column(children: [
+                                  Text("내 통계 접기",
+                                      style: TextStyle(
+                                          color: Colors.blueGrey,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.w500)),
+                                  Icon(Icons.bar_chart,
+                                      size: 25, color: Colors.grey)
+                                ]),
+                              ),
+                              SizedBox(height: 10),
+                            ],
+                          ),
                   ],
                 ),
               ),
             ),
+            CarouselSlider(
+              options: CarouselOptions(
+                autoPlay: false,
+                enlargeCenterPage: true,
+                //scrollDirection: Axis.vertical,
+                onPageChanged: (index, reason) {
+                  setState(
+                    () {
+                      _currentIndex = index;
+                    },
+                  );
+                },
+              ),
+              items: imagesList
+                  .map(
+                    (item) => Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Card(
+                        margin: EdgeInsets.only(
+                          top: 10.0,
+                          bottom: 10.0,
+                        ),
+                        elevation: 6.0,
+                        shadowColor: Colors.blueAccent,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(30.0),
+                          ),
+                          child: Stack(
+                            children: <Widget>[
+                              Image.network(
+                                item,
+                                fit: BoxFit.cover,
+                                width: double.infinity,
+                              ),
+                              Center(
+                                child: Text(
+                                  '${titles[_currentIndex]}',
+                                  style: TextStyle(
+                                    fontSize: 24.0,
+                                    fontWeight: FontWeight.bold,
+                                    backgroundColor: Colors.black45,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class SpeedoMeter extends StatelessWidget {
-  const SpeedoMeter({
-    Key key,
-    @required this.size,
-    @required double pointerValue,
-    @required this.resultList,
-  })  : _pointerValue = pointerValue,
-        super(key: key);
-
-  final double size;
-  final double _pointerValue;
-  final Map<String, dynamic> resultList;
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Stack(children: [
-        Positioned(
-          top: size - 150,
-          left: size - 200,
-          child: Container(
-            color: Colors.yellow,
-            child: Text(
-                _pointerValue == null
-                    ? "데이터 없음"
-                    : _pointerValue < 10
-                        ? "정상"
-                        : _pointerValue >= 10 && _pointerValue < 19
-                            ? "경증"
-                            : _pointerValue >= 19 && _pointerValue < 30
-                                ? "중증"
-                                : _pointerValue >= 30 && _pointerValue <= 63
-                                    ? "심각"
-                                    : "없음",
-                style: TextStyle(fontSize: 30)),
-          ),
-        ),
-        Positioned(
-          top: size - 100,
-          left: size - 320,
-          child: Container(
-            color: Colors.yellow,
-            child:
-                Text(resultList["description"], style: TextStyle(fontSize: 17)),
-          ),
-        ),
-        SizedBox(
-          width: size,
-          height: size,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: RadialGauge(
-              axes: [
-                RadialGaugeAxis(
-                  minValue: 0,
-                  maxValue: 93,
-                  minAngle: -90,
-                  maxAngle: 180,
-                  radius: 0.7,
-                  width: 0.2,
-                  segments: [
-                    RadialGaugeSegment(
-                      minValue: 0,
-                      maxValue: 20,
-                      minAngle: -90,
-                      maxAngle: -153 + 100.0 - 6,
-                      color: Colors.blue,
-                    ),
-                    RadialGaugeSegment(
-                      minValue: 20,
-                      maxValue: 40,
-                      minAngle: -118.0 + 60,
-                      maxAngle: -140.0 + 120 - 16,
-                      color: Colors.green,
-                    ),
-                    RadialGaugeSegment(
-                      minValue: 40,
-                      maxValue: 60,
-                      minAngle: -155.0 + 120,
-                      maxAngle: -150.0 + 180 - 36,
-                      color: Colors.orange,
-                    ),
-                    RadialGaugeSegment(
-                      minValue: 60,
-                      maxValue: 80,
-                      minAngle: -185.0 + 180,
-                      maxAngle: -150.0 + 240,
-                      color: Colors.red,
-                    ),
-                  ],
-                  pointers: [
-                    RadialNeedlePointer(
-                      value: _pointerValue,
-                      thicknessStart: 15,
-                      thicknessEnd: 0,
-                      length: 0.7,
-                      knobRadiusAbsolute: 10,
-                      gradient: LinearGradient(
-                        colors: [
-                          Color(Colors.grey[400].value),
-                          Color(Colors.grey[400].value),
-                          Color(Colors.grey[600].value),
-                          Color(Colors.grey[600].value)
-                        ],
-                        stops: [0, 0.5, 0.5, 1],
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      ]),
     );
   }
 }

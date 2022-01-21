@@ -9,14 +9,12 @@ import '../utils.dart';
 // import 'package:clipboard/clipboard.dart';
 // import 'package:flutter_tts/flutter_tts.dart';
 
-
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-
   String email = "1111@test.net";
   String text = '';
   String message = '안녕하세요?';
@@ -75,7 +73,7 @@ class _HomePageState extends State<HomePage> {
           Builder(
             builder: (context) => IconButton(
               icon: Icon(Icons.content_copy),
-              onPressed: ()  {
+              onPressed: () {
                 Navigator.pushNamed(context, '/chat');
               },
             ),
@@ -229,47 +227,45 @@ class _HomePageState extends State<HomePage> {
   Response response;
 
   Future toggleKeyboard() async {
-
     if (!isText) {
       var formData = FormData.fromMap({
         'input_text': text,
         'present_bdi': '',
       });
       // Future.delayed(Duration(seconds: 2), () async {
-        Dio dio = Dio();
-        response =
-            await dio.post("$prefix$bdi_call$email", data: formData);
-        Utils.scanText(text);
-        final position = controller.position.maxScrollExtent;
-        String chat = response.data["분석결과"]["시스템응답"];
-        String bdi = response.data["생성된 질문"]["질문"];
-        String dist = response.data["사용자 입력 BDI 분류"]["분류 결과"];
-        int yn = response.data["입력문장긍부정도"]["긍부정구분"]["분류 결과"];
+      Dio dio = Dio();
+      response = await dio.post("$prefix$bdi_call$email", data: formData);
+      Utils.scanText(text);
+      final position = controller.position.maxScrollExtent;
+      String chat = response.data["분석결과"]["시스템응답"];
+      String bdi = response.data["생성된 질문"]["질문"];
+      String dist = response.data["사용자 입력 BDI 분류"]["분류 결과"];
+      int yn = response.data["입력문장긍부정도"]["긍부정구분"]["분류 결과"];
 
-        print("$yn,, $bdi,,,$chat");
-        controller.animateTo(
-          position,
-          duration: Duration(milliseconds: 1000),
-          curve: Curves.easeOut,
-        );
-        // answering
-        setState(() {
-          // print bdi questionnaire if answer was yes or no
-          switch(yn) {
-            case 0:
-              message = bdi;
-              break;
-            case 1:
-              message = bdi;
-              break;
-            case 2 :
-              message = chat;
-              break;
-            default:
-              message = "통신이 원활하지 않습니다";
-          }
-          // end switch case
-        });
+      print("$yn,, $bdi,,,$chat");
+      controller.animateTo(
+        position,
+        duration: Duration(milliseconds: 1000),
+        curve: Curves.easeOut,
+      );
+      // answering
+      setState(() {
+        // print bdi questionnaire if answer was yes or no
+        switch (yn) {
+          case 0:
+            message = bdi;
+            break;
+          case 1:
+            message = bdi;
+            break;
+          case 2:
+            message = chat;
+            break;
+          default:
+            message = "통신이 원활하지 않습니다";
+        }
+        // end switch case
+      });
     }
   }
 
@@ -282,21 +278,17 @@ class _HomePageState extends State<HomePage> {
             'present_bdi': '',
           });
 
-
-          if (text == ''){
-            setState(() async => {
-              message = "인식된 음성이 없습니다.",
-              isListening = true
-            });
+          if (text == '') {
+            setState(
+                () async => {message = "인식된 음성이 없습니다.", isListening = true});
           } else if (!isListening) {
             Future.delayed(Duration(seconds: 2), () async {
               Response response;
               Dio dio = Dio();
-              try{
-              response =
-                  await dio.post("$prefix$bdi_call$email", data: formData);
-
-              } catch(e) {
+              try {
+                response =
+                    await dio.post("$prefix$bdi_call$email", data: formData);
+              } catch (e) {
                 print("error message : $e");
               }
               Utils.scanText(text);
@@ -315,14 +307,14 @@ class _HomePageState extends State<HomePage> {
               // answering
               setState(() {
                 // print bdi questionnaire if answer was yes or no
-                switch(yn) {
+                switch (yn) {
                   case 0:
                     message = bdi;
                     break;
                   case 1:
                     message = bdi;
                     break;
-                  case 2 :
+                  case 2:
                     message = chat;
                     break;
                   default:

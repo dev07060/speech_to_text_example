@@ -1,4 +1,4 @@
-const url = "http://192.168.35.179:5001/";
+const url = "http://192.168.0.37:5001/";
 String bdi_call = "bdiscale?email=";
 String email = "1111@test.net";
 

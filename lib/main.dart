@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:speech_to_text_example/page/home_page.dart';
 import 'package:speech_to_text_example/page/chat_screen.dart';
 import 'package:speech_to_text_example/page/result_summary.dart';
+import 'package:speech_to_text_example/page/testPage.dart';
 
 import 'chatCode.dart';
 
@@ -29,6 +30,7 @@ class MyApp extends StatelessWidget {
           '/': (context) => HomePage(),
           '/chat': (context) => ChatScreen(),
           '/second': (context) => ResultSummary(),
+          // '/test': (context) => RadarChartSample1(),
         },
       );
 }
